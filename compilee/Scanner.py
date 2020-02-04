@@ -44,35 +44,38 @@ class Scanner:
             "false": 25,
             "true": 26,
             "of": 27,
-            "var": 28
+            "var": 28,
+            "long": 29
         }
 
         self.specialTTable = {
-            '(': 29,
+
             ')': 30,
             ':': 31,
             ';': 32,
             ',': 33,
             '=': 34,
-            '+':35,
-            '-':36,
-            '*':37,
-            '/':38,
-            '&':39,
-            '^':40,
-            '|':41,
-            '%':42,
-            '~':43,
-            '<':44,
-            '<=':45,
-            '>':46,
-            '>=':47,
-            '<>':48,
-            '--':49,
-            '<--':50,
-            '-->':51,
-            '\'':52,
-            '\"':53
+            '+': 35,
+            '-': 36,
+            '*': 37,
+            '/': 38,
+            '&': 39,
+            '^': 40,
+            '|': 41,
+            '%': 42,
+            '~': 43,
+            '<': 44,
+            '<=': 45,
+            '>': 46,
+            '>=': 47,
+            '<>': 48,
+            '--': 49,
+            '<--': 50,
+            '-->': 51,
+            '\'': 52,
+            '\"': 53,
+            '(': 54,
+            ':=': 55,
         }
 
         self.stp = 0
@@ -98,7 +101,6 @@ class Scanner:
         else:
             self.char_index -= 1
 
-
     def next_token(self):
         string = ""
         char = self.next_char()
@@ -115,20 +117,39 @@ class Scanner:
                 char = self.next_char()
 
                 while True:
-                    if re.search("[^a-zA-Z|_|0-9]", char):
+                    if re.search("[a-zA-Z|_|0-9]", char):
                         string += char
                         char = self.next_char()
                     else:
                         self.go_to_prev_char()
                         if string in self.KWTable:
                             return self.KWTable[string]
+                        else:
+                            # self.STable[self.stp] =
+                            # TODO
+                            return string
 
-                        return string
+            if re.search("^[0-9]", char):
+                char = self.next_char()
+                if re.search("x", char):
+                    pass
+                else:
+                    while True:
+                        if re.search("[0-9]", char):
+                            string += char
+                            char = self.next_char()
+                        else:
+                            self.go_to_prev_char()
+                            return string
+                            # TODO
 
+            if re.search("^\)|^;|^,|^=|^\+|^\*|^/|^&|^^|^\||^%|^~|^\(", char):
+                return self.specialTTable[char]
 
+            if re.search("^\'", char):
+                print(char)
 
-            print(char)
-            char=self.next_char()
+            char = self.next_char()
 
             #
             # if string in self.KWTable:

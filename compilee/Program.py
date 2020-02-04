@@ -6,4 +6,5 @@ sc = scanner.Scanner(file_name)
 
 
 print(sc.next_token())
+print(sc.next_token())
 
