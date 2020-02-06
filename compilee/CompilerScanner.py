@@ -78,6 +78,7 @@ class Scanner:
             ':=': 55,
         }
 
+        self.stp = 56
         self.tokens = {
             0: "function",
             1: "begin",
@@ -152,29 +153,52 @@ class Scanner:
         else:
             char = self.text[self.line_index][self.char_index]
             self.char_index += 1
+
         return char
 
     def go_to_prev_char(self):
+
         if self.char_index == 0:
+
             self.line_index -= 1
-            self.char_index = len(self.text[self.line_index])
+            self.char_index = len(self.text[self.line_index]) - 1
+
+            char = self.text[self.line_index][self.char_index]
 
         else:
+
             self.char_index -= 1
+            char = self.text[self.line_index][self.char_index]
+
+        return char
 
     def next_token(self):
         string = ""
         char = self.next_char()
         string += char
-        word_index = self.char_index
 
         while True:
             if char == '$':
                 return "EOF"
-            # if self.isWhiteSpace(char):
-            #     continue
+
+
+
+            if self.isWhiteSpace(char):
+
+                char = self.next_char()
+                while self.isWhiteSpace(char):
+                    char = self.next_char()
+
+                if string[0] == "\n":
+                    char = self.next_char()
+
+                string = string[1:]
+                string += char
+
+
 
             if re.search("^[a-zA-Z]", char):
+
                 char = self.next_char()
 
                 while True:
@@ -184,15 +208,18 @@ class Scanner:
                     else:
                         self.go_to_prev_char()
                         if string in self.KWTable:
+                            # char = self.next_char()
                             return self.KWTable[string]
                         else:
-                            # self.STable[self.stp] =
-                            # TODO
-                            return string
+                            self.STable.update({string: self.stp})
+                            self.stp += 1
+                            # char = self.next_char()
+                            return self.stp - 1
 
             if re.search("^[0-9]", char):
                 char = self.next_char()
                 if re.search("x", char):
+                    # TODO
                     pass
                 else:
                     while True:
@@ -201,23 +228,64 @@ class Scanner:
                             char = self.next_char()
                         else:
                             self.go_to_prev_char()
-                            return string
-                            # TODO
+                            self.STable.update({string: self.stp})
+                            self.stp += 1
+                            print(string)
+                            return self.stp - 1
 
-            if re.search("^\)|^;|^,|^=|^\+|^\*|^/|^&|^^|^\||^%|^~|^\(", char):
-                return self.specialTTable[char]
+            if re.search("^\)|^;|^,|^=|^\+|^\*|^/|^&|^\^|^\||^%|^~|^\(|^\'|^\"", char):
+                temp = char
 
-            if re.search("^\'", char):
-                print(char)
+                # char = self.next_char()
+                return self.specialTTable[temp]
 
-            char = self.next_char()
+            if re.search("^<", char):
+                temp1 = char
+                char = self.next_char()
+                temp2 = char
 
-            #
-            # if string in self.KWTable:
-            #     pass
+                if char == '=':
+                    # char = self.next_char()
+                    return self.specialTTable[temp1 + temp2]
+
+
+                elif char == "-":
+
+                    print("***")
+
+                    char = self.next_char()
+
+                    if char == "-":
+
+                        while True:
+                            char = self.next_char()
+                            if char == "-":
+                                char = self.next_char()
+                                if char == "-":
+                                    char = self.next_char()
+                                    if char == ">":
+                                        char = self.next_char()
+                                        break
+
+
+                else:
+                    char = self.go_to_prev_char()
+                    return self.specialTTable[temp1]
+
+            if re.search("^>", char):
+                temp1 = char
+                char = self.next_char()
+                temp2 = char
+
+                if char == '=':
+                    return self.specialTTable[temp1 + temp2]
+                else:
+                    char = self.go_to_prev_char()
+
+                    return self.specialTTable[temp1]
 
     def isWhiteSpace(self, c):
-        if ord(c) == 32 or ord(c) == 10 or ord(c) == 12 or ord(c) == 13 or ord(c) == 9 or ord(c) == 11:
+        if '\t' == c or ' ' == c or '\n' == c or '\f' == c or '\r' == c or '\v' == c:
             return True
         return False
 
@@ -227,3 +295,5 @@ class Scanner:
         if re.search("[^a-zA-Z|_|0-9]", s):
             return False
         return True
+
+# TODO indent kar nmikone

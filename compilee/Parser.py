@@ -1,4 +1,4 @@
-import compilee.CompilerScanner as scanner
+import CompilerScanner as scanner
 import csv
 
 file_name = 'mahsa.txt'
