@@ -140,8 +140,9 @@ class Scanner:
 
         }
 
-        self.stp = 0
+        self.stp = 56
         self.STable = dict()
+        self.STable_reverse = dict()
 
     def next_char(self):
         if self.char_index == len(self.text[self.line_index]):
@@ -181,10 +182,7 @@ class Scanner:
             if char == '$':
                 return "EOF"
 
-
-
             if self.isWhiteSpace(char):
-
                 char = self.next_char()
                 while self.isWhiteSpace(char):
                     char = self.next_char()
@@ -194,8 +192,6 @@ class Scanner:
 
                 string = string[1:]
                 string += char
-
-
 
             if re.search("^[a-zA-Z]", char):
 
@@ -212,9 +208,9 @@ class Scanner:
                             return self.KWTable[string]
                         else:
                             self.STable.update({string: self.stp})
-                            self.stp += 1
-                            # char = self.next_char()
-                            return self.stp - 1
+                            self.STable_reverse.update({self.stp: string})
+                            self.stp = len(self.STable) + 56
+                            return self.STable[string]
 
             if re.search("^[0-9]", char):
                 char = self.next_char()
@@ -229,6 +225,7 @@ class Scanner:
                         else:
                             self.go_to_prev_char()
                             self.STable.update({string: self.stp})
+                            self.STable_reverse.update({self.stp: string})
                             self.stp += 1
                             print(string)
                             return self.stp - 1
@@ -246,6 +243,9 @@ class Scanner:
 
                 if char == '=':
                     # char = self.next_char()
+                    return self.specialTTable[temp1 + temp2]
+
+                elif char == '>':
                     return self.specialTTable[temp1 + temp2]
 
 
@@ -282,6 +282,33 @@ class Scanner:
                 else:
                     char = self.go_to_prev_char()
 
+                    return self.specialTTable[temp1]
+
+            if re.search("^:", char):
+                temp1 = char
+                char = self.next_char()
+                temp2 = char
+
+                if char == '=':
+                    return self.specialTTable[temp1 + temp2]
+                else:
+                    char = self.go_to_prev_char()
+                    return self.specialTTable[temp1]
+
+            if re.search("^-", char):
+                temp1 = char
+                char = self.next_char()
+                temp2 = char
+
+                if char == '-':
+                    while True:
+
+                        if char == '\n':
+                            break
+                        char = self.next_char()
+
+                else:
+                    char = self.go_to_prev_char()
                     return self.specialTTable[temp1]
 
     def isWhiteSpace(self, c):
