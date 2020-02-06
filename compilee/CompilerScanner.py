@@ -304,6 +304,7 @@ class Scanner:
                     while True:
 
                         if char == '\n':
+                            print("break")
                             break
                         char = self.next_char()
 
