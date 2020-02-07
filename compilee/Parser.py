@@ -16,6 +16,7 @@ for row in PT_reader:
 state = 0
 token = scanner.next_token()
 parse_stack = []
+id_stack = []
 STable = dict()
 temp_id = None
 
@@ -37,10 +38,21 @@ def generate_code(func_name, var=None):
     elif func_name == '@set_type':
         STable[temp_id] = var
     elif func_name == '@push_new':
+        id_stack.append(var)
         STable[var] = []
         cg.push(var)
     elif func_name == '@set_type':
+        tok = id_stack.pop()
+        STable[tok].append(var)
         cg.set_type(var)
+    elif func_name == '@push_new_func':
+        pass
+    elif func_name == '@set_func_type':
+        pass
+    elif func_name == '@func_left_acc':
+        pass
+    elif func_name == '@func_right_acc':
+        pass
 
 
 while token != 'EOF':
@@ -74,3 +86,39 @@ while token != 'EOF':
         exit()
 
 print('Compile done!')
+
+
+class Symbol:
+    def __init__(self, symbol_type):
+        self.symbol_type = symbol_type
+        self.func_return_type = None
+        self.func_return_type = None
+        self.arg_count = None
+        self.arg_type_list = None
+        self.var_type = None
+        self.var_value = None
+
+    def def_func(self, ret_type, arg_count, arg_type_list):
+        self.__init__('func')
+        if len(arg_type_list) != arg_count:
+            print('Function arg error')
+            exit()
+        self.func_return_type = ret_type
+        self.arg_count = arg_count
+        self.arg_type_list = arg_type_list
+        return self
+
+    def def_var(self, var_type, var_value):
+        self.__init__('var')
+        self.var_type = var_type
+        self.var_value = var_value
+        return self
+
+    def def_proc(self, arg_count, arg_type_list):
+        self.__init__('func')
+        if len(arg_type_list) != arg_count:
+            print('Procedure arg error')
+            exit()
+        self.arg_count = arg_count
+        self.arg_type_list = arg_type_list
+        return self
