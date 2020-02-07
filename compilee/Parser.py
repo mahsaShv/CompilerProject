@@ -3,7 +3,7 @@ import csv
 import compilee.CodeGenerator as CG
 
 file_name = 'mahsa.txt'
-table_name = 'Table_5.csv'
+table_name = '232.csv'
 scanner = scanner.Scanner(file_name)
 cg = CG.CodeGenerator()
 PT_reader = csv.DictReader(open(table_name, 'r'), delimiter=',')
@@ -17,41 +17,38 @@ state = 0
 token = scanner.next_token()
 parse_stack = []
 STable = dict()
-STable_reverse = dict()
-in_DCL = True
 temp_id = None
 
 
 def generate_code(func_name, var=None):
-    global temp_id, in_DCL, STable, STable_reverse, cg
+    global temp_id, STable, cg
 
     if func_name == 'NoSem':
         return
-    elif func_name == '@push':
-        cg.push(var)
+    elif func_name == '@push_id':
+        if var in STable:
+            cg.push(var)
+        else:
+            print('Variable not declared.')
     elif func_name == "@ADD":
         cg.sum()
-    elif func_name == '@in_DCL':
-        in_DCL = True
     elif func_name == '@def_var':
         temp_id = cg.pop()
     elif func_name == '@set_type':
         STable[temp_id] = var
+    elif func_name == '@push_new':
+        STable[var] = []
+        cg.push(var)
+    elif func_name == '@set_type':
+        cg.set_type(var)
 
 
 while token != 'EOF':
+    var = token
     if token not in scanner.tokens:
-        if token not in IDs:
-            if in_DCL:
-                IDs.append(token)
-            else:
-                print("ID not declared.")
-                # exit()
-        var = token
         token = 'id'
-    print(token, var)
     st = PT_list[state][token].split()
-
+    print(st, token, var)
     if st[0] == 'REDUCE':
         state = parse_stack.pop()
         goto_state = PT_list[state][st[1]].split()

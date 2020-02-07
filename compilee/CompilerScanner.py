@@ -289,7 +289,7 @@ class Scanner:
                 if char == '-':
                     while True:
                         if char == '\n':
-                            print("break")
+                            # print("break")
                             break
                         char = self.next_char()
                 else:

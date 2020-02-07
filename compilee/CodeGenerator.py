@@ -93,7 +93,6 @@ class CodeGenerator:
             elif isinstance(a, float):
                 self.file.write(self.getTemp() + " =" + "fdiv " + self.getType(a) + " %a, %b")
 
-
     def sum(self, a, b):
         if (self.getType(a) == self.getType(b)) or () or ():
             self.file(self.getTemp() + " =" + "add " + self.getType(a) + " %a, %b")
@@ -117,7 +116,7 @@ class CodeGenerator:
     def bitwiseAnd(self):
         a = self.semantic_stack.pop()
         b = self.semantic_stack.pop()
-        if (self.getType(a) == self.getType(b) and isinstance(a,int)):
+        if (self.getType(a) == self.getType(b) and isinstance(a, int)):
             self.file.write(self.getTemp() + " =" + "and " + self.getType(a) + " %a, %b")
 
         else:
@@ -170,3 +169,12 @@ class CodeGenerator:
 
         else:
             print("CG Error")
+
+    # TODO
+    def push_new(self, var):
+        pass
+
+    # TODO
+    # pop id name, set the type for it, wait for further instructions
+    def set_type(self, var):
+        pass

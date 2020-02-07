@@ -1,8 +1,2 @@
---lwkjvkme
+--function mahsa
 mahsa: integer
-<-- mahsa sheikhi voltgir
-    <--asdasda
-
-    -->
--->
-    function mahsa
