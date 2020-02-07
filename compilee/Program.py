@@ -1,6 +1,5 @@
-import CompilerScanner as scanner
-import CodeGenerator as codeG
-import Parser as parser
+import compilee.CompilerScanner as scanner
+import compilee.CodeGenerator as codeG
 import re
 
 file_name = "Mahsa.txt"
