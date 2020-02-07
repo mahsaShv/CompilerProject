@@ -8,6 +8,7 @@ scanner = scanner.Scanner(file_name)
 cg = CG.CodeGenerator()
 PT_reader = csv.DictReader(open(table_name, 'r'), delimiter=',')
 PT_list = []
+IDs = []
 
 for row in PT_reader:
     PT_list.append(row)
@@ -17,7 +18,7 @@ token = scanner.next_token()
 parse_stack = []
 STable = dict()
 STable_reverse = dict()
-in_DCL = False
+in_DCL = True
 temp_id = None
 
 
@@ -39,33 +40,40 @@ def generate_code(func_name, var=None):
 
 
 while token != 'EOF':
-    if token > 55:
-        var = scanner.STable_reverse[token]
-        token = 'id'
-    else:
+    if token not in scanner.tokens:
+        if token not in IDs:
+            if in_DCL:
+                IDs.append(token)
+            else:
+                print("ID not declared.")
+                # exit()
         var = token
-        token = scanner.tokens[token]
-    print(token)
-    state_token = PT_list[state][token]
-    st = state_token.split()
+        token = 'id'
+    print(token, var)
+    st = PT_list[state][token].split()
 
     if st[0] == 'REDUCE':
-        next_state = parse_stack.pop()
-        state = next_state
+        state = parse_stack.pop()
+        goto_state = PT_list[state][st[1]].split()
+        if goto_state[0] == 'GOTO':
+            state = goto_state[1][1:]
+            generate_code(goto_state[2])
+        else:
+            print('GOTO ERROR')
 
     elif st[0] == 'PUSH_GOTO':
         parse_stack.append(state)
-        next_state = int("".join(list(st[1])[1:]))
+        state = int("".join(list(st[1])[1:]))
         generate_code(st[2], var)
-        continue
+
     elif st[0] == 'SHIFT':
-        next_state = int(str(list(st[1])[1:]))
+        state = int("".join(list(st[1])[1:]))
         generate_code(st[2], var)
+        token = scanner.next_token()
 
     else:
-        print('Parser Error')
-        break
-
-    token = scanner.next_token()
+        print('Parser Error!')
+        print(state)
+        exit()
 
 print('Compile done!')
