@@ -23,6 +23,41 @@ type_stack = []
 temp_id = None
 
 
+class Symbol:
+    def __init__(self, symbol_type=None):
+        self.symbol_type = symbol_type
+        self.func_return_type = None
+        self.arg_count = None
+        self.arg_type_list = None
+        self.var_type = None
+        self.var_value = None
+
+    def def_func(self, ret_type, arg_count, arg_type_list):
+        self.__init__('func')
+        if len(arg_type_list) != arg_count:
+            print('Function arg error')
+            exit()
+        self.func_return_type = ret_type
+        self.arg_count = arg_count
+        self.arg_type_list = arg_type_list
+        return self
+
+    def def_var(self, var_type, var_value):
+        self.__init__('var')
+        self.var_type = var_type
+        self.var_value = var_value
+        return self
+
+    def def_proc(self, arg_count, arg_type_list):
+        self.__init__('func')
+        if len(arg_type_list) != arg_count:
+            print('Procedure arg error')
+            exit()
+        self.arg_count = arg_count
+        self.arg_type_list = arg_type_list
+        return self
+
+
 def generate_code(func_name, var=None):
     global temp_id, STable, cg
 
@@ -104,38 +139,3 @@ while token != 'EOF':
         exit()
 
 print('Compile done!')
-
-
-class Symbol:
-    def __init__(self, symbol_type=None):
-        self.symbol_type = symbol_type
-        self.func_return_type = None
-        self.arg_count = None
-        self.arg_type_list = None
-        self.var_type = None
-        self.var_value = None
-
-    def def_func(self, ret_type, arg_count, arg_type_list):
-        self.__init__('func')
-        if len(arg_type_list) != arg_count:
-            print('Function arg error')
-            exit()
-        self.func_return_type = ret_type
-        self.arg_count = arg_count
-        self.arg_type_list = arg_type_list
-        return self
-
-    def def_var(self, var_type, var_value):
-        self.__init__('var')
-        self.var_type = var_type
-        self.var_value = var_value
-        return self
-
-    def def_proc(self, arg_count, arg_type_list):
-        self.__init__('func')
-        if len(arg_type_list) != arg_count:
-            print('Procedure arg error')
-            exit()
-        self.arg_count = arg_count
-        self.arg_type_list = arg_type_list
-        return self
