@@ -264,3 +264,34 @@ class CodeGenerator:
 
     def get_type(self, var1, var2):
         pass
+
+    def read_func(self):
+        var_id = self.semantic_stack.pop()
+        self.symbol_table[var_id].var_value = None
+        temp_var = self.getTemp()
+        if self.symbol_table[var_id].var_type == 'integer':
+            self.code[self.pc] = [temp_var,
+                                  '= call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8] * @.str, i32 0, i32 0), i32* %' + var_id + ')']
+        elif self.symbol_table[var_id].var_type == 'character':
+            self.code[self.pc] = [temp_var,
+                                  '= call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8] * @.str.1, i32 0, i32 0), i8* %' + var_id + ')']
+        self.pc += 1
+
+    def write_str(self, var=None):
+        var = self.semantic_stack.pop()
+        temp = self.getTemp()
+        if self.semantic_table[var].var_type == 'integer':
+            self.code[self.pc] = ['%' + temp, '= call i32 (i8*, ...) @printf(i8* getelementptr inbounds'
+                                              ' ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), ', 'i32 %' + var + ')']
+        elif self.semantic_table[var].var_type == 'float':
+            self.code[self.pc] = ['%' + temp, '= call i32 (i8*, ...) @printf(i8* getelementptr inbounds'
+                                              ' ([3 x i8], [3 x i8]* @.str.2, i32 0, i32 0), ',
+                                  'float %' + var + ')']
+        elif self.semantic_table[var].var_type == 'string':
+            slash_count = 1
+            self.code[self.pc] = ['%' + temp, '= call i32 (i8*, ...) @printf(i8* getelementptr inbounds'
+                                              ' ([' + str(
+                self.semantic_table[var]['string_size'] + slash_count) + ' x i8],'
+                                                                         ' [' + str(
+                self.semantic_table[var]['string_size'] + slash_count) + ' x i8]* @' + var + ', i32 0, i32 0))']
+        self.pc += 1

@@ -3,7 +3,7 @@ import csv
 import compilee.CodeGenerator as CG
 
 file_name = 'mahsa.txt'
-table_name = '1111.csv'
+table_name = '1242.csv'
 scanner = scanner.Scanner(file_name)
 STable = dict()
 cg = CG.CodeGenerator(STable)
@@ -107,26 +107,29 @@ def generate_code(func_name, var=None):
     elif func_name == '@func_block':
         cg.func_block()
 
+    elif func_name == '@push_inp':
+        cg.read_func()
+
+    elif func_name == '@write_str':
+        cg.write_str()
+
 
 while token != 'EOF':
     var = token
     if token not in scanner.tokens:
         token = 'id'
     st = PT_list[state][token].split()
-    print(st, token, var)
     if st[0] == 'REDUCE':
         state = parse_stack.pop()
-        print('Reduce', state)
         st = PT_list[state][st[1]].split()
         if st[0] == 'GOTO':
             state = int("".join(list(st[1])[1:]))
             generate_code(st[2])
         else:
-            print('GOTO ERROR')
+            print('GOTO ERROR In state: ', state, ' And commands: ', st)
 
     elif st[0] == 'PUSH_GOTO':
         parse_stack.append(state)
-        print(state)
         state = int("".join(list(st[1])[1:]))
         generate_code(st[2], var)
 
@@ -136,8 +139,7 @@ while token != 'EOF':
         token = scanner.next_token()
 
     else:
-        print('Parser Error!')
-        print(state)
+        print('Parser Error! In state: ', state, ' And commands: ', st)
         exit()
 
 print('Compile done!')
