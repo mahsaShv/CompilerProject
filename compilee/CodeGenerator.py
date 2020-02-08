@@ -10,13 +10,11 @@ class CodeGenerator:
         self.code = {}
         self.symbol_table = STable
 
-    # def getType(self, a):
-    #     if isinstance(a, int):
-    #         return "i4"
-    #     if isinstance(a, float):
-    #         return "float"
-    #     if isinstance(a, bool):
-    #         return "i1"
+
+
+    def print_to_file(self):
+        for row in self.code:
+            print(row)
 
     def getTemp(self):
         temp = "%" + str(self.temp_num)
@@ -168,14 +166,18 @@ class CodeGenerator:
             print("CG Error")
 
     def function(self, id):
-        i = 1
+        i = 0
         self.code[self.pc] = ['define ' + str(self.set_func_type(self.symbol_table[id].func_return_type)), '@' + id,
                               '( ']
-        while i < self.symbol_table[id].arg_count:
+
+
+
+        while i < self.symbol_table[id].arg_count-1:
             self.code[self.pc] += self.set_type(
                 self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop() + ", "
             i += 1
-        self.code[self.pc] += self.set_type(self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
+        if self.symbol_table[id].arg_count > 0:
+            self.code[self.pc] += self.set_type(self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
         self.code[self.pc] += " ) {"
         self.pc += 1
         self.code[self.pc] += "entry:"
@@ -186,18 +188,25 @@ class CodeGenerator:
                               self.semantic_stack.pop(), " }"]
 
     def procedure(self, id):
-        i = 1
+        i = 0
         self.code[self.pc] = ['define void @', id, '( ']
-        while i < self.symbol_table[id].arg_count:
+
+
+
+        while i < self.symbol_table[id].arg_count-1:
             self.code[self.pc] += self.set_type(
                 self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop() + ", "
+
             i += 1
-        self.code[self.pc] += self.set_type(
-            self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
+
+        if  self.symbol_table[id].arg_count >0:
+            self.code[self.pc] += self.set_type(self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
         self.code[self.pc] += " ) {"
         self.pc += 1
         self.code[self.pc] += "entry:"
         self.pc += 1
+
+
 
     def proc_block(self, id):
         self.code[self.pc] = ['ret void', " }"]

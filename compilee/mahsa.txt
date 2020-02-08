@@ -1,4 +1,4 @@
-procedure main()
+function main() :integer
 begin
-
+return a
 end

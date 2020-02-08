@@ -3,7 +3,7 @@ import csv
 import compilee.CodeGenerator as CG
 
 file_name = 'mahsa.txt'
-table_name = '232.csv'
+table_name = '715.csv'
 scanner = scanner.Scanner(file_name)
 STable = dict()
 cg = CG.CodeGenerator(STable)
@@ -139,3 +139,7 @@ while token != 'EOF':
         exit()
 
 print('Compile done!')
+cg.print_to_file()
+
+
+

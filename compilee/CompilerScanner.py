@@ -29,7 +29,7 @@ class Scanner:
             "character": 'character',
             "real": 'real',
             "string": 'string',
-            "main": 'main',
+
             "read": 'read',
             "write": 'write',
             "strlen": 'strlen',
@@ -93,7 +93,7 @@ class Scanner:
             "character": 'character',
             "real": 'real',
             "string": 'string',
-            "main": 'main',
+
             "read": 'read',
             "write": 'write',
             "strlen": 'strlen',
