@@ -1,3 +1,4 @@
+import Parser
 class CodeGenerator:
     def __init__(self):
         self.file = open('mahsa.ll', 'r+')
@@ -9,13 +10,13 @@ class CodeGenerator:
         self.pc = 0
         self.code = {}
 
-    def getType(self, a):
-        if isinstance(a, int):
-            return "i4"
-        if isinstance(a, float):
-            return "float"
-        if isinstance(a, bool):
-            return "i1"
+    # def getType(self, a):
+    #     if isinstance(a, int):
+    #         return "i4"
+    #     if isinstance(a, float):
+    #         return "float"
+    #     if isinstance(a, bool):
+    #         return "i1"
 
     def getTemp(self):
         temp = "%" + str(self.temp_num)
@@ -60,9 +61,9 @@ class CodeGenerator:
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b)):
             if isinstance(a, int):
-                self.file.write(self.getTemp() + " =" + "add " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "add " + self.getType(a) + " %" +a +", "+ "%"+b)
             elif isinstance(a, float):
-                self.file.write(self.getTemp() + " =" + "fadd " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "fadd " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
@@ -72,18 +73,18 @@ class CodeGenerator:
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b)):
             if isinstance(a, int):
-                self.file.write(self.getTemp() + " =" + "mul " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "mul " + self.getType(a) + " %" +a +", "+ "%"+b)
             elif isinstance(a, float):
-                self.file.write(self.getTemp() + " =" + "fmul " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "fmul " + self.getType(a) + " %" +a +", "+ "%"+b)
 
     def sub(self):
         a = self.semantic_stack.pop()
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b)):
             if isinstance(a, int):
-                self.file.write(self.getTemp() + " =" + "sub " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "sub " + self.getType(a) + " %" +a +", "+ "%"+b)
             elif isinstance(a, float):
-                self.file.write(self.getTemp() + " =" + "fsub " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "fsub " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
@@ -93,26 +94,21 @@ class CodeGenerator:
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b)):
             if isinstance(a, int):
-                self.file.write(self.getTemp() + " =" + "sdiv " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "sdiv " + self.getType(a) + " %" +a +", "+ "%"+b)
             elif isinstance(a, float):
-                self.file.write(self.getTemp() + " =" + "fdiv " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "fdiv " + self.getType(a) + " %" +a +", "+ "%"+b)
 
-    def sum(self, a, b):
-        if (self.getType(a) == self.getType(b)) or () or ():
-            self.file(self.getTemp() + " =" + "add " + self.getType(a) + " %a, %b")
-            self.file("add " + self.getType(a) + " %a, %b")
 
-        else:
-            print("CG Error")
+
 
     def mod(self):
         a = self.semantic_stack.pop()
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b)):
             if isinstance(a, int):
-                self.file.write(self.getTemp() + " =" + "srem " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "srem " + self.getType(a) + " %" +a +", "+ "%"+b)
             elif isinstance(a, float):
-                self.file.write(self.getTemp() + " =" + "frem " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "frem " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
@@ -120,8 +116,8 @@ class CodeGenerator:
     def bitwiseAnd(self):
         a = self.semantic_stack.pop()
         b = self.semantic_stack.pop()
-        if (self.getType(a) == self.getType(b) and isinstance(a, int)):
-            self.file.write(self.getTemp() + " =" + "and " + self.getType(a) + " %a, %b")
+        if (self.getType(a) == self.getType(b) and isinstance(a,int)):
+            self.file.write(self.getTemp() + " =" + "and " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
@@ -130,7 +126,7 @@ class CodeGenerator:
         a = self.semantic_stack.pop()
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b) and isinstance(a, int)):
-            self.file.write(self.getTemp() + " =" + "or " + self.getType(a) + " %a, %b")
+            self.file.write(self.getTemp() + " =" + "or " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
@@ -139,7 +135,7 @@ class CodeGenerator:
         a = self.semantic_stack.pop()
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b) and isinstance(a, int)):
-            self.file.write(self.getTemp() + " =" + "xor " + self.getType(a) + " %a, %b")
+            self.file.write(self.getTemp() + " =" + "xor " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
@@ -148,7 +144,7 @@ class CodeGenerator:
         a = self.semantic_stack.pop()
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b) and isinstance(a, int)):
-            self.file.write(self.getTemp() + " =" + "xor " + self.getType(a) + " %a, %b")
+            self.file.write(self.getTemp() + " =" + "xor " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
@@ -157,7 +153,7 @@ class CodeGenerator:
         a = self.semantic_stack.pop()
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b) and isinstance(a, int)):
-            self.file.write(self.getTemp() + " =" + "xor " + self.getType(a) + " %a, %b")
+            self.file.write(self.getTemp() + " =" + "xor " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
@@ -167,12 +163,48 @@ class CodeGenerator:
         b = self.semantic_stack.pop()
         if (self.getType(a) == self.getType(b)):
             if isinstance(a, int):
-                self.file.write(self.getTemp() + " =" + "srem " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "srem " + self.getType(a) + " %" +a +", "+ "%"+b)
             elif isinstance(a, float):
-                self.file.write(self.getTemp() + " =" + "frem " + self.getType(a) + " %a, %b")
+                self.file.write(self.getTemp() + " =" + "frem " + self.getType(a) + " %" +a +", "+ "%"+b)
 
         else:
             print("CG Error")
+
+
+    def function(self , id):
+        i = 1
+        self.code[self.pc] = ['define @', id, '( ' ]
+        while i < Parser.STable[id].arg_count:
+            self.code[self.pc] += self.set_type(Parser.STable[id].arg_type_list[i]) + " %"+ self.semantic_stack.pop() + ", "
+            i +=1
+        self.code[self.pc] += self.set_type(Parser.STable[id].arg_type_list[i]) + " %"+ self.semantic_stack.pop()
+        self.code[self.pc] += " ) {"
+        self.pc +=1
+        self.code[self.pc] += "entry:"
+        self.pc +=1
+
+        def func_block(self, id):
+            self.code[self.pc] = ['ret ', Parser.STable[id].ret_type , ' %' , self.semantic_stack.pop()," }"]
+
+        def procedure(self, id):
+            i = 1
+            self.code[self.pc] = ['define void @', id, '( ']
+            while i < Parser.STable[id].arg_count:
+                self.code[self.pc] += self.set_type(
+                    Parser.STable[id].arg_type_list[i]) + " %" + self.semantic_stack.pop() + ", "
+                i += 1
+            self.code[self.pc] += self.set_type(Parser.STable[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
+            self.code[self.pc] += " ) {"
+            self.pc += 1
+            self.code[self.pc] += "entry:"
+            self.pc += 1
+
+        def proc_block(self, id):
+            self.code[self.pc] = ['ret void'," }"]
+
+
+        # def in_dcl(self):
+
 
     # TODO
     def push_new(self, var):
@@ -180,8 +212,19 @@ class CodeGenerator:
 
     # TODO
     # pop id name, set the type for it, wait for further instructions
-    def set_type(self, var):
-        pass
+    def set_type(self, type):
+        if type == "integer":
+            return "i4"
+        if type == "real":
+            return "float"
+        if type == "boolean":
+            return "i1"
+        if type == "boolean":
+            return "i1"
+        if type == "character":
+            return "char"
+
+
 
     def push_new_func(self, var):
         self.semantic_stack.append(var)

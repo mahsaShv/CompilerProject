@@ -1,11 +1,13 @@
 import re
-
+import numpy as np
+import struct
 
 class Scanner:
     def __init__(self, file_name: str):
         self.file_name = file_name
         self.line_index = 0
         self.char_index = 0
+        self.getBin = lambda x: x > 0 and str(bin(x))[2:] or "-" + str(bin(x))[3:]
 
         try:
             self.file = open(file_name, "r")
@@ -209,20 +211,43 @@ class Scanner:
             if re.search("^[0-9]", char):
                 char = self.next_char()
                 if re.search("x", char):
-                    # TODO
-                    pass
-                else:
+                    string += char
+                    char = self.next_char()
                     while True:
-                        if re.search("[0-9]", char):
+                        # char = self.next_char()
+
+                        if re.search("[0-9|a-f]", char):
                             string += char
                             char = self.next_char()
                         else:
                             self.go_to_prev_char()
-                            self.STable.update({string: self.stp})
-                            self.STable_reverse.update({self.stp: string})
+                            # self.STable.update({string: self.stp})
+                            # self.STable_reverse.update({self.stp: string})
                             self.stp += 1
-                            print(string)
-                            return self.stp - 1
+                            temp = np.int32(hex(int(string,base=0)))
+
+                            string = str(np.binary_repr(temp))
+
+                            return string
+
+                else:
+                    while True:
+                        if re.search("[0-9|.]", char):
+                            string += char
+                            char = self.next_char()
+                        else:
+                            self.go_to_prev_char()
+                            # self.STable.update({string: self.stp})
+                            # self.STable_reverse.update({self.stp: string})
+                            self.stp += 1
+
+                            if "." in string:
+                                string = str(self.floatToBinary64(float(string)))
+
+                            else:
+                                string = str(np.binary_repr(int(string)))
+
+                            return string
 
             if re.search("^\)|^;|^,|^=|^\+|^\*|^/|^&|^\^|^\||^%|^~|^\(|^\'|^\"", char):
                 temp = char
@@ -242,7 +267,6 @@ class Scanner:
                     return self.specialTTable[temp1 + temp2]
 
                 elif char == "-":
-                    print("***")
                     char = self.next_char()
                     if char == "-":
                         while True:
@@ -300,6 +324,11 @@ class Scanner:
         if '\t' == c or ' ' == c or '\n' == c or '\f' == c or '\r' == c or '\v' == c:
             return True
         return False
+
+
+    def floatToBinary64(self,value):
+        val = struct.unpack('Q', struct.pack('d', value))[0]
+        return self.getBin(val)
 
     def isID(self, s: str):
         if not re.search("^[a-zA-Z]", s):

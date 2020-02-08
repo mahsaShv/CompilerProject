@@ -1,6 +1,6 @@
-import compilee.CompilerScanner as scanner
+import CompilerScanner as scanner
 import csv
-import compilee.CodeGenerator as CG
+import CodeGenerator as CG
 
 file_name = 'mahsa.txt'
 table_name = '232.csv'
@@ -37,6 +37,14 @@ def generate_code(func_name, var=None):
         temp_id = cg.pop()
     elif func_name == '@set_type':
         STable[temp_id] = var
+    elif func_name == '@MUL':
+        cg.mult()
+    elif func_name == '@DIV':
+        cg.div()
+    elif func_name == '@MOD':
+        cg.mod()
+
+
     elif func_name == '@push_new':
         id_stack.append(var)
         STable[var] = []
