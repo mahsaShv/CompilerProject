@@ -18,6 +18,8 @@ state = 0
 token = scanner.next_token()
 parse_stack = []
 id_stack = []
+arg_stack = []
+type_stack = []
 temp_id = None
 
 
@@ -54,13 +56,21 @@ def generate_code(func_name, var=None):
         STable[tok].append(var)
         cg.set_type(var)
     elif func_name == '@push_new_func':
-        pass
-    elif func_name == '@set_func_type':
-        pass
+        STable[var] = Symbol('func')
+
+        id_stack.append(var)
     elif func_name == '@func_left_acc':
         pass
     elif func_name == '@func_right_acc':
         pass
+    elif func_name == '@zero_arg':
+        STable[id_stack[-1]].def_func(None, 0, [])
+    elif func_name == '@push_type':
+        type_stack.append(var)
+    elif func_name == '@set_func_type':
+        symb_id = id_stack.pop()
+        STable[symb_id].func_return_type = type_stack.pop()
+        cg.function(symb_id)
 
 
 while token != 'EOF':
@@ -97,7 +107,7 @@ print('Compile done!')
 
 
 class Symbol:
-    def __init__(self, symbol_type):
+    def __init__(self, symbol_type=None):
         self.symbol_type = symbol_type
         self.func_return_type = None
         self.arg_count = None
