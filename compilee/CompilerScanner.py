@@ -2,6 +2,7 @@ import re
 import numpy as np
 import struct
 
+
 class Scanner:
     def __init__(self, file_name: str):
         self.file_name = file_name
@@ -224,7 +225,7 @@ class Scanner:
                             # self.STable.update({string: self.stp})
                             # self.STable_reverse.update({self.stp: string})
                             self.stp += 1
-                            temp = np.int32(hex(int(string,base=0)))
+                            temp = np.int32(hex(int(string, base=0)))
 
                             string = str(np.binary_repr(temp))
 
@@ -325,8 +326,7 @@ class Scanner:
             return True
         return False
 
-
-    def floatToBinary64(self,value):
+    def floatToBinary64(self, value):
         val = struct.unpack('Q', struct.pack('d', value))[0]
         return self.getBin(val)
 

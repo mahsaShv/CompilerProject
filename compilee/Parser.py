@@ -1,11 +1,12 @@
-import CompilerScanner as scanner
+import compilee.CompilerScanner as scanner
 import csv
-import CodeGenerator as CG
+import compilee.CodeGenerator as CG
 
 file_name = 'mahsa.txt'
 table_name = '232.csv'
 scanner = scanner.Scanner(file_name)
-cg = CG.CodeGenerator()
+STable = dict()
+cg = CG.CodeGenerator(STable)
 PT_reader = csv.DictReader(open(table_name, 'r'), delimiter=',')
 PT_list = []
 IDs = []
@@ -17,7 +18,6 @@ state = 0
 token = scanner.next_token()
 parse_stack = []
 id_stack = []
-STable = dict()
 temp_id = None
 
 
@@ -99,7 +99,6 @@ print('Compile done!')
 class Symbol:
     def __init__(self, symbol_type):
         self.symbol_type = symbol_type
-        self.func_return_type = None
         self.func_return_type = None
         self.arg_count = None
         self.arg_type_list = None
