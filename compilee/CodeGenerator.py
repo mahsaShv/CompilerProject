@@ -6,11 +6,18 @@ class CodeGenerator:
         self.semantic_stack = []
         self.semantic_table = {}
         self.loop_num = 0
-        self.pc = 0
         self.code = {}
+        self.code[0] = ['@.i32 = private unnamed_addr constant [3 x i8] c"%d\\00" ']
+        self.code[1] = ['@.i64 = private unnamed_addr constant [4 x i8] c"%lu\\00" ']
+        self.code[2] = ['@.i8 = private unnamed_addr constant [3 x i8] c"%c\\00" ']
+        self.code[3] = ['@.double = private unnamed_addr constant [4 x i8] c"%lf\\00" ']
+        self.code[4] = ['@.i1 = private unnamed_addr constant [3 x i8] c"%d\\00" ']
+        self.code[5] = ['@.str = private unnamed_addr constant [3 x i8] c"%s\\00" ']
+        self.code[6] = ['declare i32 @scanf(i8*, ...)']
+        self.code[7] = ['declare i32 @printf(i8*, ...)']
+
+        self.pc = len(self.code)
         self.symbol_table = STable
-
-
 
     def print_to_file(self):
         for row in self.code:
@@ -170,20 +177,19 @@ class CodeGenerator:
         self.code[self.pc] = ['define ' + str(self.set_func_type(self.symbol_table[id].func_return_type)), '@' + id,
                               '( ']
 
-
-
-        while i < self.symbol_table[id].arg_count-1:
+        while i < self.symbol_table[id].arg_count - 1:
             self.code[self.pc] += self.set_type(
                 self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop() + ", "
             i += 1
         if self.symbol_table[id].arg_count > 0:
-            self.code[self.pc] += self.set_type(self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
+            self.code[self.pc] += self.set_type(
+                self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
         self.code[self.pc] += " ) {"
         self.pc += 1
-        self.code[self.pc] += "entry:"
+        self.code[self.pc] = ["entry:"]
         self.pc += 1
 
-    def func_block(self, id):
+    def func_block(self, id=None):
         self.code[self.pc] = ['ret ', self.set_func_type(self.symbol_table[id].func_return_type), ' %',
                               self.semantic_stack.pop(), " }"]
 
@@ -191,24 +197,21 @@ class CodeGenerator:
         i = 0
         self.code[self.pc] = ['define void @', id, '( ']
 
-
-
-        while i < self.symbol_table[id].arg_count-1:
+        while i < self.symbol_table[id].arg_count - 1:
             self.code[self.pc] += self.set_type(
                 self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop() + ", "
 
             i += 1
 
-        if  self.symbol_table[id].arg_count >0:
-            self.code[self.pc] += self.set_type(self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
+        if self.symbol_table[id].arg_count > 0:
+            self.code[self.pc] += self.set_type(
+                self.symbol_table[id].arg_type_list[i]) + " %" + self.semantic_stack.pop()
         self.code[self.pc] += " ) {"
         self.pc += 1
-        self.code[self.pc] += "entry:"
+        self.code[self.pc] = ["entry:"]
         self.pc += 1
 
-
-
-    def proc_block(self, id):
+    def proc_block(self, id=None):
         self.code[self.pc] = ['ret void', " }"]
 
     # def in_dcl(self):

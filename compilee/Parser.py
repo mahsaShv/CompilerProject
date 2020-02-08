@@ -3,7 +3,7 @@ import csv
 import compilee.CodeGenerator as CG
 
 file_name = 'mahsa.txt'
-table_name = '715.csv'
+table_name = '1111.csv'
 scanner = scanner.Scanner(file_name)
 STable = dict()
 cg = CG.CodeGenerator(STable)
@@ -81,7 +81,6 @@ def generate_code(func_name, var=None):
     elif func_name == '@MOD':
         cg.mod()
 
-
     elif func_name == '@push_new':
         id_stack.append(var)
         STable[var] = []
@@ -92,7 +91,6 @@ def generate_code(func_name, var=None):
         cg.set_type(var)
     elif func_name == '@push_new_func':
         STable[var] = Symbol('func')
-
         id_stack.append(var)
     elif func_name == '@func_left_acc':
         pass
@@ -106,6 +104,8 @@ def generate_code(func_name, var=None):
         symb_id = id_stack.pop()
         STable[symb_id].func_return_type = type_stack.pop()
         cg.function(symb_id)
+    elif func_name == '@func_block':
+        cg.func_block()
 
 
 while token != 'EOF':
@@ -116,15 +116,17 @@ while token != 'EOF':
     print(st, token, var)
     if st[0] == 'REDUCE':
         state = parse_stack.pop()
-        goto_state = PT_list[state][st[1]].split()
-        if goto_state[0] == 'GOTO':
-            state = goto_state[1][1:]
-            generate_code(goto_state[2])
+        print('Reduce', state)
+        st = PT_list[state][st[1]].split()
+        if st[0] == 'GOTO':
+            state = int("".join(list(st[1])[1:]))
+            generate_code(st[2])
         else:
             print('GOTO ERROR')
 
     elif st[0] == 'PUSH_GOTO':
         parse_stack.append(state)
+        print(state)
         state = int("".join(list(st[1])[1:]))
         generate_code(st[2], var)
 
@@ -140,6 +142,3 @@ while token != 'EOF':
 
 print('Compile done!')
 cg.print_to_file()
-
-
-
